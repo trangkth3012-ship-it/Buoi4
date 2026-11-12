@@ -1,0 +1,843 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-image: url('./images.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: #12151f;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+/* Lớp phủ tối giúp nổi bật nhân vật và chữ trên nền ảnh */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(15, 20, 35, 0.65), rgba(8, 10, 18, 0.92));
+    z-index: 0;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Modal thiết lập nhân vật */
+.modal {
+    position: relative;
+    z-index: 10;
+    width: 95%;
+    max-width: 560px;
+    background: rgba(22, 28, 45, 0.95);
+    border: 2px solid #3a86ff;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 0 35px rgba(58, 134, 255, 0.4);
+}
+
+.modal h2 {
+    text-align: center;
+    color: #ffd166;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.student-info {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #a8dadc;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #e0fbfc;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #457b9d;
+    background: #0d1321;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.class-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.class-card {
+    background: #0d1321;
+    border: 2px solid #2b3a55;
+    border-radius: 10px;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.class-card:has(input:checked) {
+    border-color: #ffd166;
+    background: rgba(255, 209, 102, 0.15);
+}
+
+.class-card input {
+    display: none;
+}
+
+.class-title {
+    display: block;
+    font-weight: bold;
+    color: #ffd166;
+    margin-bottom: 4px;
+}
+
+.class-card small {
+    font-size: 0.75rem;
+    color: #adb5bd;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #ef233c, #d90429);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 35, 60, 0.5);
+}
+
+/* Giao diện chiến đấu chính */
+#game-container {
+    position: relative;
+    z-index: 5;
+    width: 96%;
+    max-width: 1050px;
+    padding: 15px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+header h1 {
+    font-size: 1.9rem;
+    color: #ffd166;
+    text-shadow: 0 2px 12px rgba(255, 209, 102, 0.5);
+}
+
+#hero-banner {
+    font-size: 0.9rem;
+    color: #bde0fe;
+    margin-top: 4px;
+}
+
+/* Sàn đấu */
+.arena {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    background: rgba(16, 22, 38, 0.75);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 18px;
+    padding: 25px 40px;
+    min-height: 360px;
+    backdrop-filter: blur(6px);
+    overflow: hidden;
+}
+
+.fighter-box {
+    width: 38%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+}
+
+.stats-panel {
+    width: 100%;
+    background: rgba(10, 14, 26, 0.85);
+    border: 1px solid #3a86ff;
+    border-radius: 12px;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+}
+
+.dragon-panel {
+    border-color: #ef233c;
+}
+
+.stats-panel h3 {
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+}
+
+.badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: #2b59c3;
+    margin-bottom: 8px;
+}
+
+.dragon-badge {
+    background: #9d0208;
+}
+
+.hp-bar-container {
+    position: relative;
+    width: 100%;
+    height: 22px;
+    background: #2b2d42;
+    border-radius: 11px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.hp-bar {
+    height: 100%;
+    width: 100%;
+    transition: width 0.35s ease-out;
+}
+
+.hero-hp {
+    background: linear-gradient(90deg, #06d6a0, #118ab2);
+}
+
+.dragon-hp {
+    background: linear-gradient(90deg, #ff9e00, #d00000);
+}
+
+.hp-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.attributes {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #e2e8f0;
+}
+
+/* Nhân vật và Chuyển động (Animations) */
+.character-sprite {
+    position: relative;
+    transition: transform 0.2s;
+    animation: idleFloat 2.4s ease-in-out infinite;
+}
+
+@keyframes idleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* Lao tới tấn công */
+.hero-attack-anim {
+    animation: heroLunge 0.45s ease-in-out !important;
+}
+
+@keyframes heroLunge {
+    0% { transform: translateX(0); }
+    45% { transform: translateX(220px) scale(1.1); }
+    100% { transform: translateX(0); }
+}
+
+.dragon-attack-anim {
+    animation: dragonLunge 0.45s ease-in-out !important;
+}
+
+@keyframes dragonLunge {
+    0% { transform: translateX(0); }
+    45% { transform: translateX(-200px) scale(1.08); }
+    100% { transform: translateX(0); }
+}
+
+/* Hiệu ứng bị thương (Chớp đỏ + Giật lùi) */
+.hurt-anim {
+    animation: hurtFlash 0.4s ease !important;
+}
+
+@keyframes hurtFlash {
+    0%, 100% { filter: none; transform: translateX(0); }
+    25% { filter: brightness(2.5) sepia(1) hue-rotate(-50deg) saturate(6); transform: translateX(-14px); }
+    50% { filter: brightness(0.6); transform: translateX(14px); }
+    75% { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5); transform: translateX(-8px); }
+}
+
+/* Hiệu ứng né đòn */
+.dodge-anim {
+    animation: dodgeJump 0.45s ease !important;
+}
+
+@keyframes dodgeJump {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    50% { transform: translateY(-45px); opacity: 0.45; }
+}
+
+/* Rung lắc toàn màn hình khi dính đòn mạnh */
+.screen-shake {
+    animation: shake 0.35s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translate(0, 0); }
+    20% { transform: translate(-10px, 6px); }
+    40% { transform: translate(10px, -6px); }
+    60% { transform: translate(-8px, -4px); }
+    80% { transform: translate(8px, 4px); }
+}
+
+/* Lớp hiệu ứng đòn đánh & chữ sát thương bay lên */
+.vfx-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 6;
+}
+
+.slash-effect {
+    position: absolute;
+    right: 22%;
+    bottom: 90px;
+    width: 140px;
+    height: 140px;
+    border-top: 8px solid #00f5d4;
+    border-right: 8px solid #ffffff;
+    border-radius: 50%;
+    transform: rotate(-20deg) scale(0.5);
+    opacity: 0;
+    animation: slashPop 0.4s ease-out forwards;
+    box-shadow: 0 0 25px #00f5d4;
+}
+
+@keyframes slashPop {
+    0% { opacity: 1; transform: rotate(-45deg) scale(0.4); }
+    60% { opacity: 1; transform: rotate(15deg) scale(1.2); }
+    100% { opacity: 0; transform: rotate(35deg) scale(1.4); }
+}
+
+.fireball-effect {
+    position: absolute;
+    right: 30%;
+    bottom: 115px;
+    width: 55px;
+    height: 55px;
+    background: radial-gradient(circle, #fff3b0, #ff9e00, #d00000);
+    border-radius: 50%;
+    box-shadow: 0 0 30px #ff5400, 0 0 60px #d00000;
+    animation: fireballFly 0.45s ease-in forwards;
+}
+
+@keyframes fireballFly {
+    0% { right: 30%; transform: scale(0.7); opacity: 1; }
+    85% { right: 72%; transform: scale(1.5); opacity: 1; }
+    100% { right: 75%; transform: scale(2.2); opacity: 0; }
+}
+
+.floating-text {
+    position: absolute;
+    font-weight: 900;
+    font-size: 1.45rem;
+    text-shadow: 2px 2px 4px #000;
+    animation: floatUp 1.1s ease-out forwards;
+    white-space: nowrap;
+}
+
+.dmg-normal { color: #ffffff; }
+.dmg-crit { color: #ffd166; font-size: 1.85rem; text-shadow: 0 0 12px #ff0054; }
+.dmg-miss { color: #90e0ef; font-style: italic; }
+
+@keyframes floatUp {
+    0% { opacity: 1; transform: translateY(0) scale(0.8); }
+    30% { transform: translateY(-25px) scale(1.15); }
+    100% { opacity: 0; transform: translateY(-75px) scale(1); }
+}
+
+/* Bảng điều khiển & Nhật ký */
+.control-panel {
+    margin-top: 15px;
+    background: rgba(16, 22, 38, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    padding: 15px;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-attack {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #ff9e00, #ff5400);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 84, 0, 0.4);
+}
+
+.btn-attack:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    padding: 12px 18px;
+    background: #2b3a55;
+    color: #fff;
+    border: 1px solid #457b9d;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.sound-toggle {
+    margin-left: auto;
+    cursor: pointer;
+    user-select: none;
+}
+
+.battle-log {
+    height: 145px;
+    overflow-y: auto;
+    background: #0b0f19;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    border: 1px solid #1d2d44;
+}
+
+.log-entry { margin-bottom: 4px; }
+.log-entry.hero { color: #4cc9f0; }
+.log-entry.crit { color: #ffd166; font-weight: bold; }
+.log-entry.dragon { color: #ff758f; }
+.log-entry.miss { color: #adb5bd; font-style: italic; }
+.log-entry.system { color: #80ed99; font-weight: bold; }
+// ========================================================
+// BỘ TẠO ÂM THANH CHIẾN ĐẤU (WEB AUDIO API - KHÔNG CẦN FILE MP3)
+// ========================================================
+const SoundFX = {
+    ctx: null,
+    init() {
+        if (!this.ctx) {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    },
+    isEnabled() {
+        return document.getElementById('sound-checkbox').checked;
+    },
+    playTone(freq, type, duration, startTime = 0, vol = 0.25) {
+        if (!this.isEnabled()) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + startTime);
+        gain.gain.setValueAtTime(vol, this.ctx.currentTime + startTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + startTime + duration);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(this.ctx.currentTime + startTime);
+        osc.stop(this.ctx.currentTime + startTime + duration);
+    },
+    swordSlash() {
+        this.playTone(620, 'sawtooth', 0.12, 0, 0.2);
+        this.playTone(220, 'triangle', 0.18, 0.05, 0.3);
+    },
+    criticalHit() {
+        this.playTone(880, 'square', 0.1, 0, 0.25);
+        this.playTone(1174, 'sawtooth', 0.25, 0.08, 0.3);
+        this.playTone(140, 'sawtooth', 0.35, 0.05, 0.4);
+    },
+    fireball() {
+        this.playTone(180, 'sawtooth', 0.35, 0, 0.35);
+        this.playTone(95, 'square', 0.4, 0.1, 0.35);
+    },
+    dodge() {
+        this.playTone(400, 'sine', 0.12, 0, 0.2);
+        this.playTone(750, 'sine', 0.15, 0.08, 0.2);
+    },
+    victory() {
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+            this.playTone(f, 'triangle', 0.3, i * 0.14, 0.3);
+        });
+    },
+    defeat() {
+        [330, 293.66, 261.63, 196].forEach((f, i) => {
+            this.playTone(f, 'sawtooth', 0.35, i * 0.18, 0.25);
+        });
+    }
+};
+
+// ========================================================
+// BIẾN LOGIC NHÂN VẬT & RỒNG (TỪ CODE GỐC CỦA BẠN)
+// ========================================================
+const defaultName = "Phạm Nguyễn Minh Trang";
+const MSSV = "31241024211";
+
+let hero = {};
+let dragon = {};
+let maxHeroHealth = 105;
+let maxDragonHealth = 600;
+let isAnimating = false;
+let autoInterval = null;
+
+function initGameData(nhapTen, chonVai) {
+    let level = 1;
+    let xp = 0;
+    let skillPoints = 5;
+
+    level++;
+    xp = 150 * (level - 1) + 200;
+    skillPoints = skillPoints + xp / 10;
+
+    let strength = 0.6 * skillPoints + 0.1 * xp;
+    let agility = 0.2 * skillPoints + 0.2 * xp;
+    let intel = 0.6 * skillPoints + 10 * level;
+
+    // Lên cấp 3
+    xp = xp + 300;
+
+    // Kiểm tra trí nhớ tên nhân vật
+    let memoryNote = "";
+    if (nhapTen.trim() === defaultName) {
+        intel = intel + 5;
+        memoryNote = "Chính xác tên gốc (+5 Intel)!";
+    } else {
+        intel = intel - 5;
+        memoryNote = "Khác tên gốc (-5 Intel)!";
+    }
+
+    // Phân cấp nhân vật
+    let phanCap = "";
+    switch (chonVai) {
+        case "a":
+            phanCap = "Chiến binh";
+            strength = strength + 15;
+            agility = agility - 10;
+            intel = intel - 5;
+            break;
+        case "b":
+            phanCap = "Sát thủ";
+            strength = strength - 15;
+            agility = agility - 10;
+            intel = intel - 5;
+            break;
+        case "c":
+            phanCap = "Thợ Săn";
+            strength = strength - 15;
+            intel = intel + 15;
+            break;
+    }
+
+    // Lên cấp 4 và cấp 5 trước khi vào trận
+    level = 4;
+    xp = xp + 700;
+    level = 5;
+    let health = level + 100;
+
+    maxHeroHealth = health;
+    maxDragonHealth = 600;
+
+    hero = {
+        name: nhapTen.trim() || defaultName,
+        phanCap: phanCap,
+        level: level,
+        health: health,
+        strength: Math.round(strength * 10) / 10,
+        agility: Math.round(agility * 10) / 10,
+        intel: Math.round(intel * 10) / 10
+    };
+
+    dragon = {
+        health: 600,
+        str: 100,
+        agi: 15,
+        int: 80
+    };
+
+    // Hiển thị thông tin lên giao diện
+    document.getElementById('hero-banner').innerHTML =
+        `Anh hùng JS: <strong>${defaultName}</strong> (MSSV: ${MSSV}) | Cấp độ: <strong>${hero.level}</strong> | <em>${memoryNote}</em>`;
+    document.getElementById('display-hero-name').textContent = hero.name;
+    document.getElementById('display-hero-class').textContent = `${hero.phanCap} (Lv.${hero.level})`;
+
+    document.getElementById('hero-stats').innerHTML = `
+        <span>⚔️ STR: <b>${hero.strength}</b></span>
+        <span>💨 AGI: <b>${hero.agility}%</b></span>
+        <span>🎯 INT: <b>${hero.intel}%</b></span>
+    `;
+
+    document.getElementById('dragon-stats').innerHTML = `
+        <span>🔥 STR: <b>${dragon.str}</b></span>
+        <span>💨 AGI: <b>${dragon.agi}%</b></span>
+        <span>💥 INT: <b>${dragon.int}%</b></span>
+    `;
+
+    updateHealthBars();
+}
+
+// ========================================================
+// HIỆU ỨNG HÌNH ẢNH & CẬP NHẬT GIAO DIỆN
+// ========================================================
+function updateHealthBars() {
+    const heroPct = Math.max(0, (hero.health / maxHeroHealth) * 100);
+    const dragonPct = Math.max(0, (dragon.health / maxDragonHealth) * 100);
+
+    document.getElementById('hero-hp-bar').style.width = heroPct + '%';
+    document.getElementById('hero-hp-text').textContent = `${Math.max(0, Math.round(hero.health))} / ${maxHeroHealth}`;
+
+    document.getElementById('dragon-hp-bar').style.width = dragonPct + '%';
+    document.getElementById('dragon-hp-text').textContent = `${Math.max(0, Math.round(dragon.health))} / ${maxDragonHealth}`;
+}
+
+function addLog(message, type = '') {
+    const logBox = document.getElementById('battle-log');
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${type}`;
+    entry.textContent = `▶ ${message}`;
+    logBox.appendChild(entry);
+    logBox.scrollTop = logBox.scrollHeight;
+}
+
+function showFloatingText(text, targetSide, styleClass) {
+    const vfx = document.getElementById('vfx-layer');
+    const el = document.createElement('div');
+    el.className = `floating-text ${styleClass}`;
+    el.textContent = text;
+
+    if (targetSide === 'dragon') {
+        el.style.right = '18%';
+        el.style.bottom = '180px';
+    } else {
+        el.style.left = '18%';
+        el.style.bottom = '180px';
+    }
+
+    vfx.appendChild(el);
+    setTimeout(() => el.remove(), 1100);
+}
+
+function triggerSlashEffect() {
+    const vfx = document.getElementById('vfx-layer');
+    const slash = document.createElement('div');
+    slash.className = 'slash-effect';
+    vfx.appendChild(slash);
+    setTimeout(() => slash.remove(), 450);
+}
+
+function triggerFireballEffect() {
+    const vfx = document.getElementById('vfx-layer');
+    const fire = document.createElement('div');
+    fire.className = 'fireball-effect';
+    vfx.appendChild(fire);
+    setTimeout(() => fire.remove(), 500);
+}
+
+function triggerAnim(elementId, className, duration = 450) {
+    const el = document.getElementById(elementId);
+    el.classList.remove(className);
+    void el.offsetWidth; // Reset animation
+    el.classList.add(className);
+    setTimeout(() => el.classList.remove(className), duration);
+}
+
+// ========================================================
+// MỘT LƯỢT CHIẾN ĐẤU (ANH HÙNG ĐÁNH -> RỒNG PHẢN CÔNG)
+// ========================================================
+function executeTurn() {
+    if (isAnimating || hero.health <= 0 || dragon.health <= 0) return;
+    isAnimating = true;
+    document.getElementById('attack-btn').disabled = true;
+
+    // 1. LƯỢT CỦA ANH HÙNG
+    triggerAnim('hero-sprite', 'hero-attack-anim', 450);
+
+    setTimeout(() => {
+        const heroHit = Math.random() * 100 > dragon.agi;
+
+        if (heroHit) {
+            triggerSlashEffect();
+            triggerAnim('dragon-sprite', 'hurt-anim', 400);
+            triggerAnim('arena', 'screen-shake', 350);
+
+            dragon.health -= hero.strength;
+            addLog(`TRẢM LONG! Bạn gây sát thương ${hero.strength} điểm cho Rồng!`, 'hero');
+            showFloatingText(`-${hero.strength}`, 'dragon', 'dmg-normal');
+
+            // Kiểm tra chí mạng
+            const heroCritical = Math.random() * 100 < hero.intel;
+            if (heroCritical) {
+                SoundFX.criticalHit();
+                const critDmg = hero.strength * 2;
+                dragon.health -= critDmg;
+                addLog(`CHÍ MẠNG! Bạn gây thêm ${critDmg} sát thương cho Rồng!`, 'crit');
+                setTimeout(() => showFloatingText(`CHÍ MẠNG -${critDmg}!`, 'dragon', 'dmg-crit'), 180);
+            } else {
+                SoundFX.swordSlash();
+            }
+        } else {
+            SoundFX.dodge();
+            triggerAnim('dragon-sprite', 'dodge-anim', 450);
+            addLog('XÍ HỤT! Rồng đã lượn tránh được đòn tấn công của Bạn!', 'miss');
+            showFloatingText('NÉ ĐÒN!', 'dragon', 'dmg-miss');
+        }
+
+        updateHealthBars();
+
+        // Kiểm tra Rồng đã bị hạ gục chưa
+        if (dragon.health <= 0) {
+            SoundFX.victory();
+            addLog('CHIẾN THẮNG!!! Rồng Già đã bị hạ gục! Chúc mừng bạn đã chiến thắng!!!', 'system');
+            endGame();
+            return;
+        }
+
+        // 2. LƯỢT PHẢN CÔNG CỦA RỒNG GIÀ (Sau 750ms)
+        setTimeout(() => {
+            triggerAnim('dragon-sprite', 'dragon-attack-anim', 450);
+
+            setTimeout(() => {
+                const dragonHit = Math.random() * 100 > hero.agility;
+
+                if (dragonHit) {
+                    SoundFX.fireball();
+                    triggerFireballEffect();
+
+                    setTimeout(() => {
+                        triggerAnim('hero-sprite', 'hurt-anim', 400);
+                        triggerAnim('arena', 'screen-shake', 350);
+
+                        hero.health -= dragon.str;
+                        addLog(`HỎA CẦU! Rồng gây sát thương ${dragon.str} điểm cho Bạn!`, 'dragon');
+                        showFloatingText(`-${dragon.str}`, 'hero', 'dmg-normal');
+
+                        const dragonCritical = Math.random() * 100 < dragon.int;
+                        if (dragonCritical) {
+                            SoundFX.criticalHit();
+                            const critDmg = dragon.str * 2;
+                            hero.health -= critDmg;
+                            addLog(`CHÍ MẠNG! Rồng gây sát thương chí mạng thêm ${critDmg} điểm cho Bạn!`, 'crit');
+                            setTimeout(() => showFloatingText(`CHÍ MẠNG -${critDmg}!`, 'hero', 'dmg-crit'), 180);
+                        }
+
+                        updateHealthBars();
+
+                        // Kiểm tra Anh hùng có bị nướng không
+                        if (hero.health <= 0) {
+                            SoundFX.defeat();
+                            addLog('THẤT BẠI!!! Chúc mừng bạn đã có tên trên menu món tối của Rồng: Hiệp sĩ nướng lá lốt!', 'dragon');
+                            endGame();
+                            return;
+                        }
+
+                        isAnimating = false;
+                        document.getElementById('attack-btn').disabled = false;
+                    }, 300);
+                } else {
+                    SoundFX.dodge();
+                    triggerAnim('hero-sprite', 'dodge-anim', 450);
+                    addLog('XÍ HỤT! Bạn đã nhanh nhẹn né được Hỏa Cầu từ Rồng!', 'miss');
+                    showFloatingText('NÉ ĐÒN!', 'hero', 'dmg-miss');
+
+                    isAnimating = false;
+                    document.getElementById('attack-btn').disabled = false;
+                }
+            }, 200);
+        }, 750);
+
+    }, 220);
+}
+
+function endGame() {
+    isAnimating = false;
+    if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+    }
+    document.getElementById('attack-btn').classList.add('hidden');
+    document.getElementById('auto-btn').classList.add('hidden');
+    document.getElementById('reset-btn').classList.remove('hidden');
+}
+
+// ========================================================
+// SỰ KIỆN NÚT BẤM
+// ========================================================
+document.getElementById('start-btn').addEventListener('click', () => {
+    SoundFX.init();
+    const nameInput = document.getElementById('hero-name-input').value;
+    const selectedClass = document.querySelector('input[name="hero-class"]:checked').value;
+
+    initGameData(nameInput, selectedClass);
+    document.getElementById('setup-modal').classList.add('hidden');
+    document.getElementById('game-container').classList.remove('hidden');
+});
+
+document.getElementById('attack-btn').addEventListener('click', executeTurn);
+
+document.getElementById('auto-btn').addEventListener('click', (e) => {
+    if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+        e.target.textContent = '⚡ TỰ ĐỘNG ĐÁNH';
+    } else {
+        e.target.textContent = '⏸️ DỪNG TỰ ĐỘNG';
+        executeTurn();
+        autoInterval = setInterval(() => {
+            if (!isAnimating && hero.health > 0 && dragon.health > 0) {
+                executeTurn();
+            }
+        }, 1600);
+    }
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+    location.reload();
+});

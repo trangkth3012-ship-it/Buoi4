@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anh Hùng Javascript - Đại Chiến Rồng Già</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body {
+            background-image: url('./images.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            background-color: #12151f; color: #fff; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center; overflow-x: hidden;
+        }
+        .overlay { position: fixed; inset: 0; background: radial-gradient(circle at center, rgba(15, 20, 35, 0.65), rgba(8, 10, 18, 0.92)); z-index: 0; }
+        .hidden { display: none !important; }
+        
+        /* Modal */
+        .modal { position: relative; z-index: 10; width: 95%; max-width: 560px; background: rgba(22, 28, 45, 0.95); border: 2px solid #3a86ff; border-radius: 16px; padding: 28px; box-shadow: 0 0 35px rgba(58, 134, 255, 0.4); }
+        .modal h2 { text-align: center; color: #ffd166; margin-bottom: 8px; }
+        .student-info { text-align: center; font-size: 0.9rem; color: #a8dadc; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.15); }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #e0fbfc; }
+        input[type="text"] { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #457b9d; background: #0d1321; color: #fff; font-size: 1rem; }
+        .class-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .class-card { background: #0d1321; border: 2px solid #2b3a55; border-radius: 10px; padding: 12px 8px; text-align: center; cursor: pointer; }
+        .class-card:has(input:checked) { border-color: #ffd166; background: rgba(255, 209, 102, 0.15); }
+        .class-card input { display: none; }
+        .class-title { display: block; font-weight: bold; color: #ffd166; margin-bottom: 4px; }
+        .class-card small { font-size: 0.75rem; color: #adb5bd; }
+        .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, #ef233c, #d90429); color: white; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: bold; cursor: pointer; }
+
+        /* Game Container */
+        #game-container { position: relative; z-index: 5; width: 96%; max-width: 1050px; padding: 15px; }
+        header { text-align: center; margin-bottom: 15px; }
+        header h1 { font-size: 1.9rem; color: #ffd166; text-shadow: 0 2px 12px rgba(255, 209, 102, 0.5); }
+        #hero-banner { font-size: 0.9rem; color: #bde0fe; margin-top: 4px; }
+
+        /* Arena */
+        .arena {
+            position: relative; display: flex; justify-content: space-between; align-items: flex-end;
+            background: rgba(16, 22, 38, 0.75); border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px; padding: 25px 40px; min-height: 380px; backdrop-filter: blur(6px); overflow: hidden;
+        }
+        .fighter-box { width: 38%; display: flex; flex-direction: column; align-items: center; z-index: 2; }
+        .stats-panel { width: 100%; background: rgba(10, 14, 26, 0.85); border: 1px solid #3a86ff; border-radius: 12px; padding: 12px 15px; margin-bottom: 15px; }
+        .dragon-panel { border-color: #ef233c; }
+        .stats-panel h3 { font-size: 1.1rem; margin-bottom: 4px; }
+        .badge { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; background: #2b59c3; margin-bottom: 8px; }
+        .dragon-badge { background: #9d0208; }
+        .hp-bar-container { position: relative; width: 100%; height: 22px; background: #2b2d42; border-radius: 11px; overflow: hidden; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.2); }
+        .hp-bar { height: 100%; width: 100%; transition: width 0.35s ease-out; }
+        .hero-hp { background: linear-gradient(90deg, #06d6a0, #118ab2); }
+        .dragon-hp { background: linear-gradient(90deg, #ff9e00, #d00000); }
+        .hp-text { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; font-weight: bold; text-shadow: 1px 1px 2px #000; }
+        .attributes { display: flex; justify-content: space-between; font-size: 0.85rem; color: #e2e8f0; }
+
+        /* Character Sprites & Anims */
+        .character-sprite { position: relative; animation: idleFloat 2.4s ease-in-out infinite; }
+        @keyframes idleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+        .hero-attack-anim { animation: heroLunge 0.45s ease-in-out !important; }
+        @keyframes heroLunge { 0% { transform: translateX(0); } 45% { transform: translateX(220px) scale(1.1); } 100% { transform: translateX(0); } }
+
+        .dragon-attack-anim { animation: dragonLunge 0.45s ease-in-out !important; }
+        @keyframes dragonLunge { 0% { transform: translateX(0); } 45% { transform: translateX(-200px) scale(1.08); } 100% { transform: translateX(0); } }
+
+        .hurt-anim { animation: hurtFlash 0.4s ease !important; }
+        @keyframes hurtFlash {
+            0%, 100% { filter: none; transform: translateX(0); }
+            25% { filter: brightness(2.5) sepia(1) hue-rotate(-50deg) saturate(6); transform: translateX(-14px); }
+            50% { filter: brightness(0.6); transform: translateX(14px); }
+            75% { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5); transform: translateX(-8px); }
+        }
+        .dodge-anim { animation: dodgeJump 0.45s ease !important; }
+        @keyframes dodgeJump { 0%, 100% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(-45px); opacity: 0.45; } }
+        .screen-shake { animation: shake 0.35s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translate(0, 0); } 20% { transform: translate(-10px, 6px); } 40% { transform: translate(10px, -6px); } }
+
+        /* VFX Effects */
+        .vfx-layer { position: absolute; inset: 0; pointer-events: none; z-index: 6; }
+        .slash-effect {
+            position: absolute; right: 22%; bottom: 90px; width: 140px; height: 140px;
+            border-top: 8px solid #00f5d4; border-right: 8px solid #ffffff; border-radius: 50%;
+            transform: rotate(-20deg) scale(0.5); opacity: 0; animation: slashPop 0.4s ease-out forwards;
+        }
+        @keyframes slashPop { 0% { opacity: 1; transform: rotate(-45deg) scale(0.4); } 60% { opacity: 1; transform: rotate(15deg) scale(1.2); } 100% { opacity: 0; transform: rotate(35deg) scale(1.4); } }
+
+        .fireball-effect {
+            position: absolute; right: 30%; bottom: 115px; width: 55px; height: 55px;
+            background: radial-gradient(circle, #fff3b0, #ff9e00, #d00000); border-radius: 50%;
+            box-shadow: 0 0 30px #ff5400; animation: fireballFly 0.45s ease-in forwards;
+        }
+        @keyframes fireballFly { 0% { right: 30%; transform: scale(0.7); opacity: 1; } 85% { right: 72%; transform: scale(1.5); opacity: 1; } 100% { right: 75%; transform: scale(2.2); opacity: 0; } }
+
+        .floating-text { position: absolute; font-weight: 900; font-size: 1.45rem; text-shadow: 2px 2px 4px #000; animation: floatUp 1.1s ease-out forwards; white-space: nowrap; }
+        .dmg-normal { color: #ffffff; }
+        .dmg-crit { color: #ffd166; font-size: 1.85rem; }
+        .dmg-miss { color: #90e0ef; font-style: italic; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(0.8); } 30% { transform: translateY(-25px) scale(1.15); } 100% { opacity: 0; transform: translateY(-75px) scale(1); } }
+
+        /* Control Panel */
+        .control-panel { margin-top: 15px; background: rgba(16, 22, 38, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 14px; padding: 15px; }
+        .actions { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+        .btn-attack { padding: 12px 24px; background: linear-gradient(135deg, #ff9e00, #ff5400); color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-attack:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { padding: 12px 18px; background: #2b3a55; color: #fff; border: 1px solid #457b9d; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        .sound-toggle { margin-left: auto; cursor: pointer; user-select: none; }
+        .battle-log { height: 145px; overflow-y: auto; background: #0b0f19; border-radius: 8px; padding: 10px 14px; font-size: 0.92rem; line-height: 1.5; border: 1px solid #1d2d44; }
+        .log-entry { margin-bottom: 4px; }
+        .log-entry.hero { color: #4cc9f0; }
+        .log-entry.crit { color: #ffd166; font-weight: bold; }
+        .log-entry.dragon { color: #ff758f; }
+        .log-entry.miss { color: #adb5bd; font-style: italic; }
+        .log-entry.system { color: #80ed99; font-weight: bold; }
+    </style>
+</head>
+<body> 
+    <div class="overlay"></div>
+
+    <!-- Modal Khởi Tạo -->
+    <div id="setup-modal" class="modal">
+        <div class="modal-content">
+            <h2>KHỞI TẠO ANH HÙNG JS</h2>
+            <p class="student-info">Sinh viên: <strong>Phạm Nguyễn Minh Trang</strong> | MSSV: <strong>31241024211</strong></p>
+            
+            <div class="form-group">
+                <label for="hero-name-input">Nhập tên nhân vật của bạn:</label>
+                <input type="text" id="hero-name-input" value="Phạm Nguyễn Minh Trang">
+            </div>
+
+            <div class="form-group">
+                <label>Chọn phân cấp anh hùng:</label>
+                <div class="class-options">
+                    <label class="class-card">
+                        <input type="radio" name="hero-class" value="a" checked>
+                        <span class="class-title">a. Chiến Binh</span>
+                        <small>STR +15 | AGI -10</small>
+                    </label>
+                    <label class="class-card">
+                        <input type="radio" name="hero-class" value="b">
+                        <span class="class-title">b. Sát Thủ</span>
+                        <small>STR -15 | AGI -10</small>
+                    </label>
+                    <label class="class-card">
+                        <input type="radio" name="hero-class" value="c">
+                        <span class="class-title">c. Thợ Săn</span>
+                        <small>STR -15 | INT +15</small>
+                    </label>
+                </div>
+            </div>
+            <button id="start-btn" class="btn-primary">BẮT ĐẦU TRẬN CHIẾN</button>
+        </div>
+    </div>
+
+    <!-- Giao diện chính -->
+    <div id="game-container" class="hidden">
+        <header>
+            <h1>ĐẠI CHIẾN RỒNG GIÀ</h1>
+            <div id="hero-banner"></div>
+        </header>
+
+        <div class="arena" id="arena">
+            <!-- Anh Hùng -->
+            <div class="fighter-box" id="hero-box">
+                <div class="stats-panel">
+                    <h3 id="display-hero-name">Anh Hùng</h3>
+                    <span class="badge" id="display-hero-class">Phân cấp</span>
+                    <div class="hp-bar-container">
+                        <div class="hp-bar hero-hp" id="hero-hp-bar"></div>
+                        <span class="hp-text" id="hero-hp-text">105 / 105</span>
+                    </div>
+                    <div class="attributes" id="hero-stats"></div>
+                </div>
+
+                <div class="character-sprite" id="hero-sprite">
+                    <svg viewBox="0 0 200 220" width="180" height="200">
+                        <path d="M70 75 Q20 130 15 195 L95 180 L110 85 Z" fill="#d90429" />
+                        <rect x="82" y="140" width="16" height="55" rx="6" fill="#1d3557" />
+                        <rect x="104" y="140" width="16" height="55" rx="6" fill="#1d3557" />
+                        <rect x="80" y="175" width="20" height="22" rx="4" fill="#ef233c" />
+                        <rect x="102" y="175" width="20" height="22" rx="4" fill="#ef233c" />
+                        <path d="M72 70 L128 70 L120 145 L80 145 Z" fill="#2b59c3" />
+                        <polygon points="100,82 115,92 100,108 85,92" fill="#ffd166" stroke="#d90429" stroke-width="2"/>
+                        <rect x="79" y="136" width="42" height="8" fill="#ffd166" />
+                        <rect x="58" y="75" width="15" height="50" rx="7" transform="rotate(15 58 75)" fill="#2b59c3" />
+                        <circle cx="100" cy="48" r="20" fill="#ffcdb2" />
+                        <path d="M80 45 Q82 22 105 25 Q122 28 118 46 Q110 34 95 36 Q85 38 80 45 Z" fill="#1b1b1b" />
+                        <circle cx="106" cy="46" r="2.5" fill="#00f5d4" />
+                        <rect x="122" y="75" width="15" height="48" rx="7" transform="rotate(-25 122 75)" fill="#2b59c3" />
+                        <g transform="translate(142, 105) rotate(-35)">
+                            <rect x="-4" y="-85" width="8" height="85" rx="3" fill="#00f5d4" stroke="#ffffff" stroke-width="1.5"/>
+                            <rect x="-14" y="0" width="28" height="6" rx="2" fill="#ffd166" />
+                            <rect x="-4" y="6" width="8" height="18" fill="#4a4e69" />
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="vfx-layer" id="vfx-layer"></div>
+
+            <!-- Rồng Già -->
+            <div class="fighter-box" id="dragon-box">
+                <div class="stats-panel dragon-panel">
+                    <h3>Rồng Già Cổ Đại</h3>
+                    <span class="badge dragon-badge">Boss Hỏa Long</span>
+                    <div class="hp-bar-container">
+                        <div class="hp-bar dragon-hp" id="dragon-hp-bar"></div>
+                        <span class="hp-text" id="dragon-hp-text">600 / 600</span>
+                    </div>
+                    <div class="attributes" id="dragon-stats"></div>
+                </div>
+
+                <div class="character-sprite" id="dragon-sprite">
+                    <svg viewBox="0 0 260 230" width="230" height="210">
+                        <path d="M135 90 Q190 15 245 45 Q215 75 225 105 Q190 95 180 120 Q155 105 135 115 Z" fill="#6a040f" stroke="#370617" stroke-width="3"/>
+                        <path d="M165 175 Q225 190 245 145 Q230 175 170 190 Z" fill="#9d0208" />
+                        <ellipse cx="145" cy="145" rx="45" ry="50" fill="#d00000" />
+                        <path d="M110 115 Q95 145 115 180 Q135 150 125 115 Z" fill="#f48c06" />
+                        <path d="M115 115 Q85 85 75 60 L105 55 Q125 80 135 105 Z" fill="#d00000" />
+                        <polygon points="95,55 115,20 105,58" fill="#ffba08" />
+                        <polygon points="85,55 98,25 93,58" fill="#faa307" />
+                        <path d="M40 65 L95 50 L100 75 L45 80 Z" fill="#9d0208" />
+                        <path d="M48 85 L95 78 L92 92 L52 92 Z" fill="#6a040f" />
+                        <polygon points="52,80 56,88 60,80" fill="#fff" />
+                        <polygon points="68,78 72,86 76,78" fill="#fff" />
+                        <circle cx="75" cy="63" r="5" fill="#ffea00" />
+                        <circle cx="74" cy="63" r="2" fill="#000" />
+                        <circle cx="42" cy="82" r="7" fill="#ff9e00" opacity="0.85" />
+                        <path d="M115 180 L100 205 L125 205 Z" fill="#9d0208" />
+                        <path d="M150 180 L140 205 L165 205 Z" fill="#9d0208" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <div class="actions">
+                <button id="attack-btn" class="btn-attack">⚔️ TUNG ĐÒN TRẢM LONG</button>
+                <button id="auto-btn" class="btn-secondary">⚡ TỰ ĐỘNG ĐÁNH</button>
+                <button id="reset-btn" class="btn-secondary hidden">🔄 CHƠI LẠI</button>
+                <label class="sound-toggle"><input type="checkbox" id="sound-checkbox" checked> 🔊 Âm thanh</label>
+            </div>
+            <div class="battle-log" id="battle-log">
+                <div class="log-entry system">Trận chiến bắt đầu! Hãy bấm nút tấn công để chiến đấu!</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nhúng file JS xử lý -->
+    <script src="anhhung.js"></script>
+</body>
+</html>
